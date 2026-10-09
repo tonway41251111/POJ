@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-@echo off
-echo Adding files...
-git add .
-echo Committing changes...
-git commit -m "auto update: %date% %time%"
-echo Pushing to GitHub...
-git push origin main
-echo Done!
-=======
 @echo off
 echo Adding files...
 git add .
@@ -18,5 +8,4 @@ git pull --rebase origin main
 echo Pushing to GitHub...
 git push origin main
 echo Done!
->>>>>>> 573013a (auto update: Fri 10/09/2026 20:54:37.30)
 pause
