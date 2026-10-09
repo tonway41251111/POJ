@@ -156,20 +156,22 @@ def login(data: LoginRequest, response: Response):
   raise HTTPException(status_code=401, detail="ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
 
-@app.post("/api/logout")
-def logout(response: Response):
-  response.delete_cookie("logged_in")
-  return {"status": "success"}
-
-
 # ----------------- ตรวจสอบสิทธิ์หน้าแรก (Root Route) -----------------
+from fastapi.responses import FileResponse, RedirectResponse
+
+
 @app.get("/")
 def serve_home(request: Request):
-  # ถ้ายังไม่พบคุกกี้ล็อกอิน ให้ Redirect ไปหน้า login.html ทันที
+  # ถ้ายังไม่ล็อกอิน ให้ส่งไปหน้า login
   if request.cookies.get("logged_in") != "true":
-    return RedirectResponse(url="/login.html")
+    return RedirectResponse(url="/login")
   return FileResponse("static/index.html")
 
 
-# 🔻 Mount Static Files ไว้สำหรับไฟล์ประกอบ (CSS, JS, login.html, รูปภาพ) 🔻
-app.mount("/", StaticFiles(directory="static"), name="static")
+@app.get("/login")
+def serve_login_page():
+  return FileResponse("static/login.html")
+
+
+# ให้เมานต์โฟลเดอร์ static ไปที่ /static แทน เพื่อไม่ให้ทับ Route หลัก
+app.mount("/static", StaticFiles(directory="static"), name="static")
