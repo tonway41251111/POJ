@@ -9,22 +9,20 @@
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
     body {
       display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; background: #eef2f6; padding: 20px;
+      min-height: 100vh; background: #eef2f6; padding: 30px 15px;
     }
     .signup-card {
-      display: flex; width: 850px; background: white;
+      display: flex; width: 900px; background: white;
       border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
       overflow: hidden;
     }
-
-    /* ฝั่งซ้าย: โลโก้และแบรนดิ้ง */
     .brand-side {
-      flex: 1; background: linear-gradient(145deg, #1e88e5, #1565c0);
+      flex: 1; background: linear-gradient(135deg, #0ee950, #2b37df);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       color: white; padding: 40px; text-align: center;
     }
     .logo-img {
-      width: 140px; height: 140px; border-radius: 50%;
+      width: 180px; height: 180px; border-radius: 50%;
       background: white; padding: 6px; margin-bottom: 20px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.15); object-fit: contain;
     }
@@ -32,6 +30,171 @@
       font-size: 38px; font-weight: 800; letter-spacing: 2px;
       text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .brand-title span { color: #f44336; -webkit-text-stroke: 1px white; }
+    .brand-title span { color: hsl(100, 100%, 99%); }
     .brand-subtitle {
-      font-size:
+      font-size: 13px; font-weight: 600; letter-spacing: 3px;
+      margin-top: 10px; opacity: 0.9;
+    }
+    .form-side {
+      flex: 1.1; padding: 35px 45px; display: flex; flex-direction: column;
+      justify-content: center; max-height: 90vh; overflow-y: auto;
+    }
+    .back-nav {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: #1e88e5; text-decoration: none; font-size: 18px; font-weight: 700;
+      margin-bottom: 20px; cursor: pointer;
+    }
+    .back-nav:hover { text-decoration: underline; }
+    .input-group { margin-bottom: 12px; }
+    .input-label {
+      display: block; font-size: 13px; color: #444; margin-bottom: 5px; font-weight: 600;
+    }
+    .input-wrapper { position: relative; }
+    .input-wrapper input {
+      width: 100%; padding: 10px 14px; border: 1px solid #d0d7de;
+      border-radius: 6px; font-size: 14px; background: #fff; transition: all 0.2s;
+    }
+    .input-wrapper input:focus {
+      border-color: #1e88e5; outline: none;
+      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.15);
+    }
+    .toggle-icon {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: #888; cursor: pointer; font-size: 14px;
+    }
+    .phone-wrapper {
+      display: flex; border: 1px solid #d0d7de; border-radius: 6px; overflow: hidden;
+    }
+    .phone-country {
+      background: #f8fafc; border-right: 1px solid #d0d7de;
+      padding: 0 10px; display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555;
+    }
+    .phone-wrapper input {
+      border: none; border-radius: 0; flex: 1; padding: 10px 14px; outline: none;
+    }
+    .terms-group {
+      display: flex; align-items: center; gap: 8px; margin: 15px 0 20px; font-size: 12px; color: #555;
+    }
+    .terms-group a { color: #1e88e5; text-decoration: none; }
+    .terms-group a:hover { text-decoration: underline; }
+    .btn-signup {
+      width: 100%; padding: 12px; background: #e0e0e0; color: #888;
+      border: 1px solid #ccc; border-radius: 6px; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-signup.active {
+      background: #1e88e5; color: white; border-color: #1e88e5; cursor: pointer;
+    }
+    .btn-signup.active:hover { background: #1565c0; }
+  </style>
+</head>
+<body>
+
+  <div class="signup-card">
+    <div class="brand-side">
+      <img class="logo-img" src="/static/logo.png" alt="School Logo">
+      <div class="brand-title"><span>PHAKWAN</span></div>
+      <div class="brand-subtitle">WHERE · THINGS · CHAT</div>
+    </div>
+
+    <div class="form-side">
+      <a href="/login" class="back-nav">
+        <i class="fa-solid fa-chevron-left"></i> Sign Up
+      </a>
+
+      <div class="input-group">
+        <label class="input-label">First Name</label>
+        <div class="input-wrapper">
+          <input type="text" placeholder="Enter your first name">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Last Name</label>
+        <div class="input-wrapper">
+          <input type="text" placeholder="Enter your last name">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Email</label>
+        <div class="input-wrapper">
+          <input type="email" placeholder="Enter your email address">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <div class="input-wrapper">
+          <input type="password" id="pass1" placeholder="Choose a strong password">
+          <i class="fa-regular fa-eye-slash toggle-icon" onclick="togglePass('pass1', this)"></i>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Confirm Password</label>
+        <div class="input-wrapper">
+          <input type="password" id="pass2" placeholder="Re-enter your password for confirmation">
+          <i class="fa-regular fa-eye-slash toggle-icon" onclick="togglePass('pass2', this)"></i>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Organization</label>
+        <div class="input-wrapper">
+          <input type="text" placeholder="Enter the name of your organization">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Phone Number</label>
+        <div class="phone-wrapper">
+          <div class="phone-country">
+            <span>🇹🇭</span> +66
+          </div>
+          <input type="tel" placeholder="Phone number">
+        </div>
+      </div>
+
+      <div class="terms-group">
+        <input type="checkbox" id="terms" onchange="toggleButton(this)">
+        <label for="terms">I agree to the <a href="#">Privacy Policy</a> and <a href="#">Terms of Use</a></label>
+      </div>
+
+      <button type="button" id="btn-submit" class="btn-signup" onclick="handleSignUp()">Sign Up</button>
+    </div>
+  </div>
+
+  <script>
+    function togglePass(id, icon) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      }
+    }
+
+    function toggleButton(cb) {
+      const btn = document.getElementById('btn-submit');
+      if (cb.checked) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+
+    function handleSignUp() {
+      const cb = document.getElementById('terms');
+      if (!cb.checked) {
+        alert('กรุณายอมรับเงื่อนไขและนโยบายความเป็นส่วนตัวก่อนลงทะเบียน');
+        return;
+      }
+      alert('ลงทะเบียนสำเร็จ (โหมดจำลองระบบ)');
+      window.location.href = '/login';
+    }
+  </script>
+</body>
+</html>

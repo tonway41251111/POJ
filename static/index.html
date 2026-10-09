@@ -25,13 +25,11 @@
     <button class="btn-logout" onclick="handleLogout()">ออกจากระบบ</button>
   </div>
 
-  <!-- ภาพสดจากหุ่นยนต์ -->
   <div class="card" style="margin-bottom: 25px;">
     <h3>ภาพสดจากหุ่นยนต์</h3>
     <img class="stream" src="/video_feed" alt="กำลังเชื่อมต่อกล้อง...">
   </div>
 
-  <!-- การ์ดสถานะเซ็นเซอร์ -->
   <div class="card-container">
     <div class="card">
       <h3>สถานะการล้มล่าสุด</h3>
@@ -47,7 +45,6 @@
     </div>
   </div>
 
-  <!-- ตารางประวัติเหตุการณ์ -->
   <h3>ประวัติข้อมูลเซ็นเซอร์ล่าสุด</h3>
   <table>
     <thead>
@@ -64,7 +61,6 @@
   </table>
 
   <script>
-   // ตรวจสอบสิทธิ์: ถ้ายังไม่ได้เข้าสู่ระบบ ให้เด้งไปหน้า login
     if (!document.cookie.includes('logged_in=true')) {
       window.location.href = '/login';
     }
@@ -77,20 +73,10 @@
       }
     }
 
-    async function handleLogout() {
-      try {
-        await fetch('/api/logout', { method: 'POST' });
-      } finally {
-        window.location.href = '/login.html';
-      }
-    }
-
     async function updateDashboard() {
       try {
         const res = await fetch('/api/logs');
         const data = await res.json();
-        
-        console.log("ข้อมูลจาก API:", data);
 
         if (Array.isArray(data) && data.length > 0) {
           const latest = data[0];
