@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เข้าสู่ระบบ - Robot Monitor</title>
+  <style>
+    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; margin: 0; }
+    .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; }
+    h3 { margin-top: 0; text-align: center; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    button:hover { background: #1565c0; }
+    .error { color: #d32f2f; font-size: 14px; text-align: center; display: none; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h3>เข้าสู่ระบบ</h3>
+    <input type="text" id="user" placeholder="ชื่อผู้ใช้">
+    <input type="password" id="pass" placeholder="รหัสผ่าน">
+    <button onclick="handleLogin()">เข้าสู่ระบบ</button>
+    <div id="err-msg" class="error">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+  </div>
+
+  <script>
+    async function handleLogin() {
+      const username = document.getElementById('user').value.trim();
+      const password = document.getElementById('pass').value.trim();
+      const err = document.getElementById('err-msg');
+      err.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        if (res.ok) {
+          window.location.href = '/';
+        } else {
+          err.style.display = 'block';
+        }
+      } catch {
+        err.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
+        err.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
