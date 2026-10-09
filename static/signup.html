@@ -186,57 +186,57 @@
       }
     }
 
-    async function handleSignUp() {
-      const cb = document.getElementById('terms');
-      if (!cb.checked) {
-        alert('กรุณายอมรับเงื่อนไขและข้อกำหนดก่อนลงทะเบียน');
-        return;
-      }
+async function handleSignUp() {
+  const cb = document.getElementById('terms');
+  if (!cb.checked) {
+    alert('กรุณายอมรับเงื่อนไขและข้อกำหนดก่อนลงทะเบียน');
+    return;
+  }
 
-      const p1 = document.getElementById('pass1').value.trim();
-      const p2 = document.getElementById('pass2').value.trim();
+  const p1 = document.getElementById('pass1').value.trim();
+  const p2 = document.getElementById('pass2').value.trim();
 
-      if (!p1 || !p2) {
-        alert('กรุณากรอกรหัสผ่าน');
-        return;
-      }
-      if (p1 !== p2) {
-        alert('รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน');
-        return;
-      }
+  if (!p1 || !p2) {
+    alert('กรุณากรอกรหัสผ่าน');
+    return;
+  }
+  if (p1 !== p2) {
+    alert('รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน');
+    return;
+  }
 
-      const payload = {
-        first_name: document.getElementById('fname').value.trim(),
-        last_name: document.getElementById('lname').value.trim(),
-        username: document.getElementById('uname').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        password: p1,
-        phone: document.getElementById('phone').value.trim()
-      };
+  const payload = {
+    first_name: document.getElementById('fname').value.trim(),
+    last_name: document.getElementById('lname').value.trim(),
+    username: document.getElementById('uname').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    password: p1,
+    phone: document.getElementById('phone').value.trim()
+  };
 
-      if (!payload.first_name || !payload.username || !payload.email) {
-        alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
-        return;
-      }
+  if (!payload.first_name || !payload.username || !payload.email) {
+    alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+    return;
+  }
 
-      try {
-        const res = await fetch('/api/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+  try {
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-        const data = await res.json();
-        if (res.ok) {
-          alert('ลงทะเบียนสำเร็จ! สามารถใช้ชื่อผู้ใช้ หรือ อีเมล ในการเข้าสู่ระบบได้ทันที');
-          window.location.href = '/login';
-        } else {
-          alert('ลงทะเบียนไม่สำเร็จ: ' + (data.detail || 'เกิดข้อผิดพลาด'));
-        }
-      } catch (err) {
-        alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
-      }
+    const data = await res.json();
+    if (res.ok) {
+      alert('ลงทะเบียนสำเร็จ! สามารถนำชื่อผู้ใช้หรืออีเมลไปเข้าสู่ระบบได้ทันที');
+      window.location.href = '/login';
+    } else {
+      alert('ลงทะเบียนไม่สำเร็จ: ' + (data.detail || 'เกิดข้อผิดพลาด'));
     }
+  } catch (err) {
+    alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+  }
+}
   </script>
 </body>
 </html>
