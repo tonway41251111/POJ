@@ -139,8 +139,6 @@
         </div>
       </div>
 
-    
-
       <div class="input-group">
         <label class="input-label">หมายเลขโทรศัพท์</label>
         <div class="phone-wrapper">
@@ -156,7 +154,7 @@
         <label for="terms">ฉันยอมรับ <a href="#">นโยบายความเป็นส่วนตัว</a> และ <a href="#">ข้อกำหนดการใช้งาน</a></label>
       </div>
 
-      <button type="button" id="btn-submit" class="btn-signup" onclick="handleSignUp()">Sign Up</button>
+      <button type="button" id="btn-submit" class="btn-signup" onclick="handleSignUp()">ลงทะเบียน</button>
     </div>
   </div>
 
@@ -181,14 +179,7 @@
       }
     }
 
-    async function handleSignUp() {
-  const cb = document.getElementById('terms');
-  if (!cb.checked) {
-    alert('กรุณายอมรับเงื่อนไขและนโยบายความเป็นส่วนตัวก่อนลงทะเบียน');
-    return;
-  }
-
-  function handleSignUp() {
+    function handleSignUp() {
       const cb = document.getElementById('terms');
       if (!cb.checked) {
         alert('กรุณายอมรับเงื่อนไขและนโยบายความเป็นส่วนตัวก่อนลงทะเบียน');
