@@ -27,8 +27,17 @@ MAX_HUMID_THRESHOLD = 80.0
 
 # ----------------- โมเดลข้อมูล (Schemas) -----------------
 class LoginRequest(BaseModel):
-  username: str
+  username: str  # รองรับทั้งชื่อผู้ใช้หรืออีเมล
   password: str
+
+
+class SignUpRequest(BaseModel):
+  first_name: str
+  last_name: str
+  username: str
+  email: str
+  password: str
+  phone: Optional[str] = None
 
 
 class TelemetryData(BaseModel):
@@ -78,18 +87,14 @@ def video_feed():
   )
 
 
-# ----------------- Endpoints รับและแสดงข้อมูล -----------------
+# ----------------- Endpoints เซ็นเซอร์ -----------------
 @app.post("/api/telemetry")
 async def receive_api_telemetry(data: TelemetryData):
   alerts = []
-
   if data.fall_detected:
     alerts.append("🚨 สถานะ: ตรวจพบการล้ม!")
-
-  if data.temperature is not None:
-    if data.temperature > MAX_TEMP_THRESHOLD:
-      alerts.append(f"🔥 อุณหภูมิ: สูงผิดปกติ ({data.temperature} °C)")
-
+  if data.temperature is not None and data.temperature > MAX_TEMP_THRESHOLD:
+    alerts.append(f"🔥 อุณหภูมิ: สูงผิดปกติ ({data.temperature} °C)")
   if data.humidity is not None:
     if data.humidity > MAX_HUMID_THRESHOLD:
       alerts.append(f"💧 ความชื้น: สูงเกินไป ({data.humidity} %)")
@@ -100,8 +105,7 @@ async def receive_api_telemetry(data: TelemetryData):
     message = (
         "⚠️ [รายงานแจ้งเตือนระบบ]\n"
         + "\n".join(alerts)
-        + f"\n\n📊 ข้อมูลปัจจุบัน:\n- อุณหภูมิ: {data.temperature} °C\n- ความชื้น:"
-        f" {data.humidity} %"
+        + f"\n\n📊 ข้อมูลปัจจุบัน:\n- อุณหภูมิ: {data.temperature} °C\n- ความชื้น: {data.humidity} %"
     )
     send_line_alert(message)
 
@@ -120,7 +124,6 @@ async def receive_api_telemetry(data: TelemetryData):
 def get_logs():
   try:
     if supabase is None:
-      print("Supabase client is None")
       return []
     response = (
         supabase.table("sensor_logs")
@@ -129,7 +132,6 @@ def get_logs():
         .limit(10)
         .execute()
     )
-    print(f"Data fetched: {response.data}")
     return response.data
   except Exception as e:
     print(f"Error fetching logs from Supabase: {e}")
@@ -141,10 +143,42 @@ def read_root():
   return {"status": "FastAPI is running"}
 
 
-# ----------------- ระบบ Login / Logout -----------------
+# ----------------- ระบบ Login / Signup / Logout -----------------
+@app.post("/api/signup")
+def register_user(data: SignUpRequest):
+  try:
+    existing = (
+        supabase.table("users")
+        .select("id")
+        .or_(f"username.eq.{data.username},email.eq.{data.email}")
+        .execute()
+    )
+    if existing.data and len(existing.data) > 0:
+      raise HTTPException(
+          status_code=400, detail="ชื่อผู้ใช้หรืออีเมลนี้มีอยู่ในระบบแล้ว"
+      )
+
+    supabase.table("users").insert({
+        "first_name": data.first_name,
+        "last_name": data.last_name,
+        "username": data.username,
+        "email": data.email,
+        "password": data.password,
+        "phone": data.phone,
+    }).execute()
+    return {"status": "success", "message": "ลงทะเบียนสำเร็จ"}
+  except HTTPException:
+    raise
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=f"เกิดข้อผิดพลาด: {str(e)}")
+
+
 @app.post("/api/login")
 def login(data: LoginRequest, response: Response):
-  if data.username == ADMIN_USER and data.password == ADMIN_PASS:
+  login_id = data.username.strip()
+
+  # ตรวจสอบกับบัญชีแอดมินค่าเริ่มต้น
+  if login_id == ADMIN_USER and data.password == ADMIN_PASS:
     response.set_cookie(
         key="logged_in",
         value="true",
@@ -153,19 +187,40 @@ def login(data: LoginRequest, response: Response):
         samesite="lax",
     )
     return {"status": "success", "message": "เข้าสู่ระบบสำเร็จ"}
+
+  # ตรวจสอบกับฐานข้อมูล Supabase (ค้นหาได้ทั้ง Username หรือ Email)
+  try:
+    user_query = (
+        supabase.table("users")
+        .select("*")
+        .or_(f"username.eq.{login_id},email.eq.{login_id}")
+        .eq("password", data.password)
+        .execute()
+    )
+    if user_query.data and len(user_query.data) > 0:
+      response.set_cookie(
+          key="logged_in",
+          value="true",
+          max_age=86400,
+          httponly=False,
+          samesite="lax",
+      )
+      return {"status": "success", "message": "เข้าสู่ระบบสำเร็จ"}
+  except Exception as e:
+    print("Database Login Error:", e)
+
   raise HTTPException(status_code=401, detail="ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
-@app.get("/signup")
-@app.get("/signup.html")
-def serve_signup_page():
-    return FileResponse("static/signup.html")
 
-from fastapi.responses import FileResponse, RedirectResponse
+@app.post("/api/logout")
+def logout(response: Response):
+  response.delete_cookie("logged_in")
+  return {"status": "success"}
 
 
+# ----------------- Routes หน้าเว็บ -----------------
 @app.get("/")
 def serve_home(request: Request):
-  # ถ้ายังไม่ล็อกอิน ให้พาไปหน้า login
   if request.cookies.get("logged_in") != "true":
     return RedirectResponse(url="/login")
   return FileResponse("static/index.html")
@@ -176,30 +231,11 @@ def serve_home(request: Request):
 def serve_login_page():
   return FileResponse("static/login.html")
 
-# โมเดลรับข้อมูล Sign Up
-class SignUpRequest(BaseModel):
-  first_name: str
-  last_name: str
-  email: str
-  password: str
-  organization: Optional[str] = None
-  phone: Optional[str] = None
+
+@app.get("/signup")
+@app.get("/signup.html")
+def serve_signup_page():
+  return FileResponse("static/signup.html")
 
 
-@app.post("/api/signup")
-def register_user(data: SignUpRequest):
-  try:
-    # บันทึกข้อมูลผู้ใช้ลง Supabase
-    supabase.table("users").insert({
-        "first_name": data.first_name,
-        "last_name": data.last_name,
-        "email": data.email,
-        "password": data.password,
-        "organization": data.organization,
-        "phone": data.phone,
-    }).execute()
-    return {"status": "success", "message": "ลงทะเบียนสำเร็จ"}
-  except Exception as e:
-    raise HTTPException(status_code=400, detail=str(e))
-# เมานต์ static เพื่อให้ดึง /static/logo.png หรือไฟล์อื่นๆ ได้
 app.mount("/static", StaticFiles(directory="static"), name="static")

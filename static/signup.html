@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign Up - Robot Monitor</title>
+  <title>ลงทะเบียน - Robot Monitor</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
@@ -12,7 +12,7 @@
       min-height: 100vh; background: #eef2f6; padding: 30px 15px;
     }
     .signup-card {
-      display: flex; width: 900px; background: white;
+      display: flex; width: 920px; background: white;
       border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
       overflow: hidden;
     }
@@ -22,12 +22,12 @@
       color: white; padding: 40px; text-align: center;
     }
     .logo-img {
-      width: 180px; height: 180px; border-radius: 50%;
+      width: 200px; height: 200px; border-radius: 50%;
       background: white; padding: 6px; margin-bottom: 20px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.15); object-fit: contain;
     }
     .brand-title {
-      font-size: 38px; font-weight: 800; letter-spacing: 2px;
+      font-size: 40px; font-weight: 800; letter-spacing: 2px;
       text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     .brand-title span { color: hsl(100, 100%, 99%); }
@@ -80,7 +80,7 @@
     .btn-signup {
       width: 100%; padding: 12px; background: #e0e0e0; color: #888;
       border: 1px solid #ccc; border-radius: 6px; font-size: 15px; font-weight: 600;
-      cursor: pointer; transition: all 0.2s;
+      cursor: not-allowed; transition: all 0.2s;
     }
     .btn-signup.active {
       background: #1e88e5; color: white; border-color: #1e88e5; cursor: pointer;
@@ -92,7 +92,7 @@
 
   <div class="signup-card">
     <div class="brand-side">
-      <img class="logo-img" src="/static/logo.png" alt="School Logo">
+      <img class="logo-img" src="/static/logo.png" alt="Logo">
       <div class="brand-title"><span>PHAKWAN</span></div>
       <div class="brand-subtitle">WHERE · THINGS · CHAT</div>
     </div>
@@ -105,28 +105,35 @@
       <div class="input-group">
         <label class="input-label">ชื่อจริง</label>
         <div class="input-wrapper">
-          <input type="text" placeholder="กรอกชื่อจริงของคุณ">
+          <input type="text" id="fname" placeholder="กรอกชื่อจริงของคุณ">
         </div>
       </div>
 
       <div class="input-group">
         <label class="input-label">นามสกุล</label>
         <div class="input-wrapper">
-          <input type="text" placeholder="กรอกนามสกุลของคุณ">
+          <input type="text" id="lname" placeholder="กรอกนามสกุลของคุณ">
         </div>
       </div>
 
       <div class="input-group">
-        <label class="input-label">Email</label>
+        <label class="input-label">ชื่อผู้ใช้ (Username)</label>
         <div class="input-wrapper">
-          <input type="email" placeholder="กรอกอีเมลของคุณ">
+          <input type="text" id="uname" placeholder="ตั้งชื่อผู้ใช้ภาษาอังกฤษ/ตัวเลข">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">อีเมล</label>
+        <div class="input-wrapper">
+          <input type="email" id="email" placeholder="example@mail.com">
         </div>
       </div>
 
       <div class="input-group">
         <label class="input-label">รหัสผ่าน</label>
         <div class="input-wrapper">
-          <input type="password" id="pass1" placeholder="เลือกรหัสผ่านที่คาดเดายาก">
+          <input type="password" id="pass1" placeholder="เลือกรหัสผ่าน">
           <i class="fa-regular fa-eye-slash toggle-icon" onclick="togglePass('pass1', this)"></i>
         </div>
       </div>
@@ -134,7 +141,7 @@
       <div class="input-group">
         <label class="input-label">ยืนยันรหัสผ่าน</label>
         <div class="input-wrapper">
-          <input type="password" id="pass2" placeholder="กรอกรหัสผ่านอีกครั้งเพื่อยืนยัน">
+          <input type="password" id="pass2" placeholder="กรอกรหัสผ่านอีกครั้ง">
           <i class="fa-regular fa-eye-slash toggle-icon" onclick="togglePass('pass2', this)"></i>
         </div>
       </div>
@@ -145,7 +152,7 @@
           <div class="phone-country">
             <span>🇹🇭</span> +66
           </div>
-          <input type="tel" placeholder="หมายเลขโทรศัพท์ของคุณ">
+          <input type="tel" id="phone" placeholder="หมายเลขโทรศัพท์">
         </div>
       </div>
 
@@ -179,14 +186,56 @@
       }
     }
 
-    function handleSignUp() {
+    async function handleSignUp() {
       const cb = document.getElementById('terms');
       if (!cb.checked) {
-        alert('กรุณายอมรับเงื่อนไขและนโยบายความเป็นส่วนตัวก่อนลงทะเบียน');
+        alert('กรุณายอมรับเงื่อนไขและข้อกำหนดก่อนลงทะเบียน');
         return;
       }
-      alert('ลงทะเบียนสำเร็จ (โหมดจำลองระบบ)');
-      window.location.href = '/login';
+
+      const p1 = document.getElementById('pass1').value.trim();
+      const p2 = document.getElementById('pass2').value.trim();
+
+      if (!p1 || !p2) {
+        alert('กรุณากรอกรหัสผ่าน');
+        return;
+      }
+      if (p1 !== p2) {
+        alert('รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน');
+        return;
+      }
+
+      const payload = {
+        first_name: document.getElementById('fname').value.trim(),
+        last_name: document.getElementById('lname').value.trim(),
+        username: document.getElementById('uname').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: p1,
+        phone: document.getElementById('phone').value.trim()
+      };
+
+      if (!payload.first_name || !payload.username || !payload.email) {
+        alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          alert('ลงทะเบียนสำเร็จ! สามารถใช้ชื่อผู้ใช้ หรือ อีเมล ในการเข้าสู่ระบบได้ทันที');
+          window.location.href = '/login';
+        } else {
+          alert('ลงทะเบียนไม่สำเร็จ: ' + (data.detail || 'เกิดข้อผิดพลาด'));
+        }
+      } catch (err) {
+        alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+      }
     }
   </script>
 </body>
