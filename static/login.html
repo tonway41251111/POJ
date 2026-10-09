@@ -2,139 +2,90 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>เข้าสู่ระบบ - Robot Monitor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>เข้าสู่ระบบ - น้องพาขวัญ</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * { box-sizing: border-box; font-family: 'Sarabun', sans-serif; margin: 0; padding: 0; }
-    body {
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; background: #f0f2f5;
-    }
-    .login-container {
-      display: flex; width: 1000px; height: 600px;
-      background: white; border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-      overflow: hidden;
-    }
-    .brand-side {
-      flex: 1.1; background: linear-gradient(135deg, #0ee950, #2b37df);
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      position: relative; color: white; padding: 40px; text-align: center;
-    }
-    .logo-img {
-      width: 320px; height: 320px; margin-bottom: 20px; z-index: 1;
-      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.15));
-      border-radius: 50%; background: white; padding: 6px; object-fit: contain;
-    }
-    .brand-title {
-      font-size: 48px; font-weight: 800; letter-spacing: 2px; z-index: 1;
-      text-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    .brand-title span { color: hsl(100, 100%, 99%); }
-    .form-side {
-      flex: 0.9; padding: 45px; display: flex; flex-direction: column;
-      justify-content: center;
-    }
-    .welcome-text {
-      color: #1976D2; font-size: 26px; font-weight: 700; margin-bottom: 25px; line-height: 1.3;
-    }
-    .input-group { margin-bottom: 18px; position: relative; }
-    .input-label {
-      display: block; font-size: 14px; color: #555; margin-bottom: 8px; font-weight: 600;
-    }
-    .input-wrapper { position: relative; }
-    .input-wrapper i {
-      position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
-      color: #888; font-size: 16px;
-    }
-    .input-wrapper input {
-      width: 100%; padding: 12px 15px 12px 45px; border: 1px solid #ccc;
-      border-radius: 6px; font-size: 15px; background: #f8fafc; transition: all 0.3s;
-    }
-    .input-wrapper input:focus {
-      border-color: #1976D2; background: white; outline: none;
-      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
-    }
-    .toggle-password {
-      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-      cursor: pointer; color: #888;
-    }
-    .forget-pwd { text-align: right; margin-top: -8px; margin-bottom: 20px; }
-    .forget-pwd a { font-size: 13px; color: #666; text-decoration: none; }
-    .forget-pwd a:hover { color: #1976D2; text-decoration: underline; }
-    .btn-login {
-      width: 100%; padding: 12px; background: #1E88E5; color: white;
-      border: none; border-radius: 6px; font-size: 16px; font-weight: 600;
-      cursor: pointer; transition: background 0.2s;
-    }
-    .btn-login:hover { background: #1565C0; }
-    .divider { height: 1px; background: #e0e0e0; margin: 25px 0; }
-    .register-text { text-align: center; font-size: 14px; color: #666; }
-    .register-text a {
-      color: #1976D2; text-decoration: none; font-weight: 600; margin-top: 5px; display: inline-block;
-    }
-    .register-text a:hover { text-decoration: underline; }
-    .error-alert {
-      background: #ffebee; color: #c62828; padding: 10px; border-radius: 6px;
-      font-size: 14px; margin-bottom: 20px; display: none; text-align: center;
+    body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, sans-serif; min-height: 100vh; }
+    .brand-side { background: linear-gradient(135deg, #0ee950, #2b37df); }
+    .logo-img { width: 140px; height: 140px; object-fit: contain; }
+    @media (min-width: 768px) {
+      .logo-img { width: 220px; height: 220px; }
     }
   </style>
 </head>
-<body>
+<body class="d-flex align-items-center justify-content-center p-2 p-md-4">
 
-  <div class="login-container">
-    <div class="brand-side">
-      <img class="logo-img" src="/static/logo.png" alt="Logo">
-      <div class="brand-title"><span>PHAKWAN</span></div>
-    </div>
+  <div class="card border-0 shadow-lg rounded-4 overflow-hidden w-100" style="max-width: 900px;">
+    <div class="row g-0">
+      <!-- ฝั่งแบรนด์ -->
+      <div class="col-12 col-md-5 brand-side text-white d-flex flex-column align-items-center justify-content-center p-4 text-center">
+        <img class="logo-img rounded-circle bg-white p-2 shadow mb-3" src="/static/logo.png" alt="Logo">
+        <h2 class="fw-bold tracking-wide m-0">PHAKWAN</h2>
+        <span class="small opacity-75 mt-1">WHERE · THINGS · CHAT</span>
+      </div>
 
-    <div class="form-side">
-      <h3 class="welcome-text">ยินดีต้อนรับ<br>เข้าสู่ระบบน้องพาขวัญ</h3>
-      <div id="err-msg" class="error-alert">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+      <!-- ฝั่งฟอร์มเข้าสู่ระบบ -->
+      <div class="col-12 col-md-7 p-4 p-md-5 bg-white d-flex flex-column justify-content-center">
+        <h4 class="text-primary fw-bold text-center text-md-start mb-4">
+          ยินดีต้อนรับ<br><span class="fs-5 text-secondary">เข้าสู่ระบบน้องพาขวัญ</span>
+        </h4>
 
-      <div class="input-group">
-        <label class="input-label">ชื่อผู้ใช้ หรือ อีเมล</label>
-        <div class="input-wrapper">
-          <i class="fa-regular fa-user"></i>
-          <input type="text" id="user" placeholder="ใส่ชื่อผู้ใช้ หรือ อีเมล">
+        <div id="err-msg" class="alert alert-danger py-2 text-center small d-none" role="alert">
+          ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง
         </div>
-      </div>
 
-      <div class="input-group">
-        <label class="input-label">รหัสผ่าน</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-lock"></i>
-          <input type="password" id="pass" placeholder="ใส่รหัสผ่าน">
-          <i class="fa-regular fa-eye-slash toggle-password" onclick="togglePasswordVisibility()"></i>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold text-secondary">ชื่อผู้ใช้ หรือ อีเมล</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted"><i class="fa-regular fa-user"></i></span>
+            <input type="text" id="user" class="form-control" placeholder="ใส่ชื่อผู้ใช้ หรือ อีเมล">
+          </div>
         </div>
-      </div>
 
-      <div class="forget-pwd">
-        <a href="#">ลืมรหัสผ่าน?</a>
-      </div>
+        <div class="mb-2">
+          <label class="form-label small fw-semibold text-secondary">รหัสผ่าน</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" id="pass" class="form-control" placeholder="ใส่รหัสผ่าน">
+            <button class="btn btn-outline-secondary" type="button" onclick="togglePass()">
+              <i class="fa-regular fa-eye-slash" id="toggle-icon"></i>
+            </button>
+          </div>
+        </div>
 
-      <button class="btn-login" onclick="handleLogin()">เข้าสู่ระบบ</button>
+        <div class="text-end mb-4">
+          <a href="#" class="small text-decoration-none text-muted">ลืมรหัสผ่าน?</a>
+        </div>
 
-      <div class="divider"></div>
+        <button class="btn btn-primary py-2 fw-semibold w-100 shadow-sm mb-3" onclick="handleLogin()">
+          เข้าสู่ระบบ
+        </button>
 
-      <div class="register-text">
-        ยังไม่มีบัญชีใช้งาน?<br>
-        <a href="/signup">ลงทะเบียนกับ ระบบ</a>
+        <hr class="text-muted my-3">
+
+        <div class="text-center small text-secondary">
+          ยังไม่มีบัญชีใช้งาน?<br>
+          <a href="/signup" class="fw-semibold text-primary text-decoration-none">ลงทะเบียนกับ ระบบ</a>
+        </div>
       </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    function togglePasswordVisibility() {
-      const passInput = document.getElementById('pass');
-      const eyeIcon = document.querySelector('.toggle-password');
-      if (passInput.type === 'password') {
-        passInput.type = 'text';
-        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+    function togglePass() {
+      const pass = document.getElementById('pass');
+      const icon = document.getElementById('toggle-icon');
+      if (pass.type === 'password') {
+        pass.type = 'text';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
       } else {
-        passInput.type = 'password';
-        eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+        pass.type = 'password';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
       }
     }
 
@@ -142,7 +93,7 @@
       const username = document.getElementById('user').value.trim();
       const password = document.getElementById('pass').value.trim();
       const err = document.getElementById('err-msg');
-      err.style.display = 'none';
+      err.classList.add('d-none');
 
       try {
         const res = await fetch('/api/login', {
@@ -153,11 +104,12 @@
         if (res.ok) {
           window.location.href = '/';
         } else {
-          err.style.display = 'block';
+          err.innerText = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+          err.classList.remove('d-none');
         }
       } catch {
-        err.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
-        err.style.display = 'block';
+        err.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์';
+        err.classList.remove('d-none');
       }
     }
   </script>
