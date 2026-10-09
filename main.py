@@ -155,7 +155,10 @@ def login(data: LoginRequest, response: Response):
     return {"status": "success", "message": "เข้าสู่ระบบสำเร็จ"}
   raise HTTPException(status_code=401, detail="ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
-
+@app.get("/signup")
+@app.get("/signup.html")
+def serve_signup_page():
+    return FileResponse("static/signup.html")
 
 from fastapi.responses import FileResponse, RedirectResponse
 
