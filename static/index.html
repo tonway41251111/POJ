@@ -64,9 +64,17 @@
   </table>
 
   <script>
-    // ตรวจสอบสิทธิ์: ถ้ายังไม่ได้เข้าสู่ระบบ ให้เด้งไปหน้า login.html ทันที
+   // ตรวจสอบสิทธิ์: ถ้ายังไม่ได้เข้าสู่ระบบ ให้เด้งไปหน้า login
     if (!document.cookie.includes('logged_in=true')) {
-      window.location.href = '/login.html';
+      window.location.href = '/login';
+    }
+
+    async function handleLogout() {
+      try {
+        await fetch('/api/logout', { method: 'POST' });
+      } finally {
+        window.location.href = '/login';
+      }
     }
 
     async function handleLogout() {

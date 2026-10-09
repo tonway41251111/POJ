@@ -156,22 +156,23 @@ def login(data: LoginRequest, response: Response):
   raise HTTPException(status_code=401, detail="ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
 
-# ----------------- ตรวจสอบสิทธิ์หน้าแรก (Root Route) -----------------
+
 from fastapi.responses import FileResponse, RedirectResponse
 
 
 @app.get("/")
 def serve_home(request: Request):
-  # ถ้ายังไม่ล็อกอิน ให้ส่งไปหน้า login
+  # ถ้ายังไม่ล็อกอิน ให้พาไปหน้า login
   if request.cookies.get("logged_in") != "true":
     return RedirectResponse(url="/login")
   return FileResponse("static/index.html")
 
 
 @app.get("/login")
+@app.get("/login.html")
 def serve_login_page():
   return FileResponse("static/login.html")
 
 
-# ให้เมานต์โฟลเดอร์ static ไปที่ /static แทน เพื่อไม่ให้ทับ Route หลัก
+# เมานต์ static เพื่อให้ดึง /static/logo.png หรือไฟล์อื่นๆ ได้
 app.mount("/static", StaticFiles(directory="static"), name="static")
