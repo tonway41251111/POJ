@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+supabase
+requests
+pydantic
+opencv-python-headless
+google-genai

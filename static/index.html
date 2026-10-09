@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Robot Monitor Dashboard</title>
+  <style>
+    body { font-family: sans-serif; margin: 30px; background: #f4f6f8; color: #333; }
+    .card-container { display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap; }
+    .card { background: white; padding: 20px; border-radius: 8px; flex: 1; min-width: 200px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .status-alert { color: #d32f2f; font-weight: bold; }
+    .status-normal { color: #388e3c; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; margin-top: 15px; }
+    th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+    th { background: #1976d2; color: white; }
+    img.stream { display: block; border-radius: 8px; background: #222; width: 100%; max-width: 640px; }
+  </style>
+</head>
+<body>
+
+  <h2>แดชบอร์ดติดตามสถานะน้องพาขวัญ</h2>
+
+  <!-- ส่วนแสดงผลกล้องสด -->
+  <div class="card" style="margin-bottom: 25px;">
+    <h3>ภาพสดจากหุ่นยนต์</h3>
+    <img class="stream" src="/video_feed" alt="กำลังเชื่อมต่อกล้อง...">
+  </div>
+
+  <!-- การ์ดสถานะเซ็นเซอร์ -->
+  <div class="card-container">
+    <div class="card">
+      <h3>สถานะการล้มล่าสุด</h3>
+      <p id="fall-status">-</p>
+    </div>
+    <div class="card">
+      <h3>อุณหภูมิ</h3>
+      <p id="temp">- °C</p>
+    </div>
+    <div class="card">
+      <h3>ความชื้น</h3>
+      <p id="humid">- %</p>
+    </div>
+  </div>
+
+  <!-- ตารางประวัติเหตุการณ์ -->
+  <h3>ประวัติข้อมูลเซ็นเซอร์ล่าสุด</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>เวลา</th>
+        <th>สถานะการล้ม</th>
+        <th>อุณหภูมิ (°C)</th>
+        <th>ความชื้น (%)</th>
+      </tr>
+    </thead>
+    <tbody id="log-table-body">
+      <tr><td colspan="4">กำลังโหลดข้อมูล...</td></tr>
+    </tbody>
+  </table>
+
+ <script>
+    async function updateDashboard() {
+      try {
+        const res = await fetch('/api/logs');
+        const data = await res.json();
+        
+        console.log("ข้อมูลจาก API:", data);
+
+        if (Array.isArray(data) && data.length > 0) {
+          const latest = data[0];
+          
+          const fallElem = document.getElementById('fall-status');
+          if (latest.fall_detected) {
+            fallElem.innerHTML = '<span class="status-alert">⚠️ ตรวจพบล้ม!</span>';
+          } else {
+            fallElem.innerHTML = '<span class="status-normal">ปกติ</span>';
+          }
+
+          document.getElementById('temp').innerText = (latest.temperature ?? '-') + ' °C';
+          document.getElementById('humid').innerText = (latest.humidity ?? '-') + ' %';
+
+          const tbody = document.getElementById('log-table-body');
+          tbody.innerHTML = data.map(item => `
+            <tr>
+              <td>${item.created_at ? new Date(item.created_at).toLocaleString('th-TH') : '-'}</td>
+              <td>${item.fall_detected ? '<span class="status-alert">ตรวจพบล้ม</span>' : '<span class="status-normal">ปกติ</span>'}</td>
+              <td>${item.temperature ?? '-'}</td>
+              <td>${item.humidity ?? '-'}</td>
+            </tr>
+          `).join('');
+        }
+      } catch (err) {
+        console.error("โหลดข้อมูลล้มเหลว:", err);
+      }
+    }
+
+    updateDashboard();
+    setInterval(updateDashboard, 2000);
+  </script>
+</body>
+</html>
