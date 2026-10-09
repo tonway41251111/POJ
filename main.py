@@ -8,14 +8,18 @@ from supabase import create_client, Client
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import FastAPI, HTTPException
-# สร้างคลาสโครงสร้างข้อมูลที่ส่งเข้ามา
+from fastapi import Response
+from pydantic import BaseModel
+class LoginRequest(BaseModel):
+  username: str
+  password: str
 class TelemetryData(BaseModel):
     fall_detected: bool = False
     temperature: Optional[float] = None
     humidity: Optional[float] = None
 app = FastAPI()
-
-# 🔻 วางค่า Supabase ของคุณตรงนี้ 🔻
+ADMIN_USER = "admin"
+ADMIN_PASS = "123456"
 SUPABASE_URL = "https://inpjkkpdpbuouxqvnywc.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlucGpra3BkcGJ1b3V4cXZueXdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0Njg1NjAsImV4cCI6MjEwNzA0NDU2MH0.wZm8bGndtFlVoNmmyGkc65o1i2I2OaOkKRRghfO5xS8"  # วาง key ตัวยาวที่ขึ้นต้นด้วย eyJhbGciOi
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -127,5 +131,23 @@ def get_logs():
 @app.get("/api/health")
 def read_root():
     return {"status": "FastAPI is running"}
+
+@app.post("/api/login")
+def login(data: LoginRequest, response: Response):
+  if data.username == ADMIN_USER and data.password == ADMIN_PASS:
+    # ตั้งค่า Cookie เพื่อบันทึกสถานะการล็อกอิน
+    response.set_cookie(
+        key="logged_in",
+        value="true",
+        max_age=86400,
+        httponly=False,
+        samesite="lax",
+    )
+    return {"status": "success", "message": "เข้าสู่ระบบสำเร็จ"}
+  raise HTTPException(status_code=401, detail="ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
+@app.post("/api/logout")
+def logout(response: Response):
+  response.delete_cookie("logged_in")
+  return {"status": "success"}
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
