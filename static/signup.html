@@ -99,66 +99,61 @@
 
     <div class="form-side">
       <a href="/login" class="back-nav">
-        <i class="fa-solid fa-chevron-left"></i> Sign Up
+        <i class="fa-solid fa-chevron-left"></i> ลงทะเบียน
       </a>
 
       <div class="input-group">
-        <label class="input-label">First Name</label>
+        <label class="input-label">ชื่อจริง</label>
         <div class="input-wrapper">
-          <input type="text" placeholder="Enter your first name">
+          <input type="text" placeholder="กรอกชื่อจริงของคุณ">
         </div>
       </div>
 
       <div class="input-group">
-        <label class="input-label">Last Name</label>
+        <label class="input-label">นามสกุล</label>
         <div class="input-wrapper">
-          <input type="text" placeholder="Enter your last name">
+          <input type="text" placeholder="กรอกนามสกุลของคุณ">
         </div>
       </div>
 
       <div class="input-group">
         <label class="input-label">Email</label>
         <div class="input-wrapper">
-          <input type="email" placeholder="Enter your email address">
+          <input type="email" placeholder="กรอกอีเมลของคุณ">
         </div>
       </div>
 
       <div class="input-group">
-        <label class="input-label">Password</label>
+        <label class="input-label">รหัสผ่าน</label>
         <div class="input-wrapper">
-          <input type="password" id="pass1" placeholder="Choose a strong password">
+          <input type="password" id="pass1" placeholder="เลือกรหัสผ่านที่คาดเดายาก">
           <i class="fa-regular fa-eye-slash toggle-icon" onclick="togglePass('pass1', this)"></i>
         </div>
       </div>
 
       <div class="input-group">
-        <label class="input-label">Confirm Password</label>
+        <label class="input-label">ยืนยันรหัสผ่าน</label>
         <div class="input-wrapper">
-          <input type="password" id="pass2" placeholder="Re-enter your password for confirmation">
+          <input type="password" id="pass2" placeholder="กรอกรหัสผ่านอีกครั้งเพื่อยืนยัน">
           <i class="fa-regular fa-eye-slash toggle-icon" onclick="togglePass('pass2', this)"></i>
         </div>
       </div>
 
-      <div class="input-group">
-        <label class="input-label">Organization</label>
-        <div class="input-wrapper">
-          <input type="text" placeholder="Enter the name of your organization">
-        </div>
-      </div>
+    
 
       <div class="input-group">
-        <label class="input-label">Phone Number</label>
+        <label class="input-label">หมายเลขโทรศัพท์</label>
         <div class="phone-wrapper">
           <div class="phone-country">
             <span>🇹🇭</span> +66
           </div>
-          <input type="tel" placeholder="Phone number">
+          <input type="tel" placeholder="หมายเลขโทรศัพท์ของคุณ">
         </div>
       </div>
 
       <div class="terms-group">
         <input type="checkbox" id="terms" onchange="toggleButton(this)">
-        <label for="terms">I agree to the <a href="#">Privacy Policy</a> and <a href="#">Terms of Use</a></label>
+        <label for="terms">ฉันยอมรับ <a href="#">นโยบายความเป็นส่วนตัว</a> และ <a href="#">ข้อกำหนดการใช้งาน</a></label>
       </div>
 
       <button type="button" id="btn-submit" class="btn-signup" onclick="handleSignUp()">Sign Up</button>
@@ -186,7 +181,14 @@
       }
     }
 
-    function handleSignUp() {
+    async function handleSignUp() {
+  const cb = document.getElementById('terms');
+  if (!cb.checked) {
+    alert('กรุณายอมรับเงื่อนไขและนโยบายความเป็นส่วนตัวก่อนลงทะเบียน');
+    return;
+  }
+
+  function handleSignUp() {
       const cb = document.getElementById('terms');
       if (!cb.checked) {
         alert('กรุณายอมรับเงื่อนไขและนโยบายความเป็นส่วนตัวก่อนลงทะเบียน');

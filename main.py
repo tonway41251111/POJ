@@ -176,6 +176,30 @@ def serve_home(request: Request):
 def serve_login_page():
   return FileResponse("static/login.html")
 
+# โมเดลรับข้อมูล Sign Up
+class SignUpRequest(BaseModel):
+  first_name: str
+  last_name: str
+  email: str
+  password: str
+  organization: Optional[str] = None
+  phone: Optional[str] = None
 
+
+@app.post("/api/signup")
+def register_user(data: SignUpRequest):
+  try:
+    # บันทึกข้อมูลผู้ใช้ลง Supabase
+    supabase.table("users").insert({
+        "first_name": data.first_name,
+        "last_name": data.last_name,
+        "email": data.email,
+        "password": data.password,
+        "organization": data.organization,
+        "phone": data.phone,
+    }).execute()
+    return {"status": "success", "message": "ลงทะเบียนสำเร็จ"}
+  except Exception as e:
+    raise HTTPException(status_code=400, detail=str(e))
 # เมานต์ static เพื่อให้ดึง /static/logo.png หรือไฟล์อื่นๆ ได้
 app.mount("/static", StaticFiles(directory="static"), name="static")
