@@ -2,27 +2,169 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>เข้าสู่ระบบ - Robot Monitor</title>
+  <!-- ดึงไอคอนสุดโมเดิร์นจาก FontAwesome มาใช้งาน -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f2f5; margin: 0; }
-    .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; }
-    h3 { margin-top: 0; text-align: center; }
-    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    button { width: 100%; padding: 10px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-    button:hover { background: #1565c0; }
-    .error { color: #d32f2f; font-size: 14px; text-align: center; display: none; margin-top: 10px; }
+    * { box-sizing: border-box; font-family: 'Sarabun', sans-serif; margin: 0; padding: 0; }
+    body {
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; background: #f0f2f5;
+    }
+    .login-container {
+      display: flex; width: 900px; height: 500px;
+      background: white; border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    
+    /* ฝั่งซ้าย: โลโก้และแบรนดิ้ง */
+    .brand-side {
+      flex: 1.1; background: linear-gradient(135deg, #2196F3, #1976D2);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      position: relative; color: white; padding: 40px; text-align: center;
+    }
+    .brand-side::before {
+      content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(45deg, transparent 60%, rgba(255,255,255,0.08) 60%);
+    }
+    .logo-img {
+      width: 140px; height: 140px; margin-bottom: 25px; z-index: 1;
+      filter: drop-shadow(0 5px 15px rgba(0,0,0,0.15));
+    }
+    .brand-title {
+      font-size: 52px; font-weight: 800; letter-spacing: 2px; z-index: 1;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .brand-title span { color: #f44336; -webkit-text-stroke: 1.5px white; }
+    .brand-subtitle {
+      font-size: 14px; font-weight: 600; letter-spacing: 3px;
+      margin-top: 10px; opacity: 0.9; z-index: 1;
+    }
+
+    /* ฝั่งขวา: ฟอร์ม Login */
+    .form-side {
+      flex: 0.9; padding: 45px; display: flex; flex-direction: column;
+      justify-content: center;
+    }
+    .welcome-text {
+      color: #1976D2; font-size: 24px; font-weight: 700; margin-bottom: 30px;
+    }
+    .input-group { margin-bottom: 20px; position: relative; }
+    .input-label {
+      display: block; font-size: 14px; color: #555; margin-bottom: 8px; font-weight: 600;
+    }
+    .input-wrapper { position: relative; }
+    .input-wrapper i {
+      position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+      color: #888; font-size: 16px;
+    }
+    .input-wrapper input {
+      width: 100%; padding: 12px 15px 12px 45px; border: 1px solid #ccc;
+      border-radius: 6px; font-size: 15px; background: #f8fafc; transition: all 0.3s;
+    }
+    .input-wrapper input:focus {
+      border-color: #1976D2; background: white; outline: none;
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+    }
+    .toggle-password {
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+      cursor: pointer; color: #888;
+    }
+
+    .forget-pwd {
+      text-align: right; margin-top: -10px; margin-bottom: 25px;
+    }
+    .forget-pwd a { font-size: 13px; color: #666; text-decoration: none; }
+    .forget-pwd a:hover { color: #1976D2; text-decoration: underline; }
+
+    .btn-login {
+      width: 100%; padding: 12px; background: #1E88E5; color: white;
+      border: none; border-radius: 6px; font-size: 16px; font-weight: 600;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .btn-login:hover { background: #1565C0; }
+
+    .divider { height: 1px; background: #e0e0e0; margin: 25px 0; }
+
+    .register-text { text-align: center; font-size: 14px; color: #666; }
+    .register-text a {
+      color: #1976D2; text-decoration: none; font-weight: 600; margin-top: 5px; display: inline-block;
+    }
+    .register-text a:hover { text-decoration: underline; }
+    
+    .error-alert {
+      background: #ffebee; color: #c62828; padding: 10px; border-radius: 6px;
+      font-size: 14px; margin-bottom: 20px; display: none; text-align: center;
+    }
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <h3>เข้าสู่ระบบ</h3>
-    <input type="text" id="user" placeholder="ชื่อผู้ใช้">
-    <input type="password" id="pass" placeholder="รหัสผ่าน">
-    <button onclick="handleLogin()">เข้าสู่ระบบ</button>
-    <div id="err-msg" class="error">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+
+  <div class="login-container">
+    <!-- ฝั่งซ้าย: แบรนดิ้ง -->
+    <div class="brand-side">
+      <!-- ใช้โลโก้ฟันเฟืองของ NETPIE เพื่อความเข้ากัน -->
+      <img class="logo-img" src="/logo.png" alt="Robot Monitor Logo">
+      <div class="brand-title"><span>ROBOT</span> MONITOR</div>
+      <div class="brand-subtitle">WHERE · THINGS · CHAT</div>
+    </div>
+
+    <!-- ฝั่งขวา: ฟอร์มกรอกข้อมูล -->
+    <div class="form-side">
+      <h3 class="welcome-text">Welcome to Robot Monitor</h3>
+      
+      <!-- ข้อความแจ้งเตือนสีแดงเมื่อรหัสผิด -->
+      <div id="err-msg" class="error-alert">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+
+      <div class="input-group">
+        <label class="input-label">Username</label>
+        <div class="input-wrapper">
+          <i class="fa-regular fa-user"></i>
+          <input type="text" id="user" placeholder="ใส่ชื่อผู้ใช้งาน">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock"></i>
+          <input type="password" id="pass" placeholder="ใส่รหัสผ่าน">
+          <i class="fa-regular fa-eye-slash toggle-password" onclick="togglePasswordVisibility()"></i>
+        </div>
+      </div>
+
+      <div class="forget-pwd">
+        <a href="#">Forget your password?</a>
+      </div>
+
+      <button class="btn-login" onclick="handleLogin()">Log In</button>
+
+      <div class="divider"></div>
+
+      <div class="register-text">
+        Don't have an account yet?<br>
+        <a href="#">Register with Robot Monitor</a>
+      </div>
+    </div>
   </div>
 
   <script>
+    // ฟังก์ชันเปิด-ปิดการซ่อนรหัสผ่าน
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById('pass');
+      const eyeIcon = document.querySelector('.toggle-password');
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+      } else {
+        passInput.type = 'password';
+        eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+      }
+    }
+
+    // ฟังก์ชันเชื่อมโยงระบบเข้าสู่ระบบ
     async function handleLogin() {
       const username = document.getElementById('user').value.trim();
       const password = document.getElementById('pass').value.trim();
@@ -47,4 +189,4 @@
     }
   </script>
 </body>
-</html> 
+</html>
