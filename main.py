@@ -1,7 +1,7 @@
 from typing import Optional
 import cv2
-from fastapi import FastAPI, HTTPException, Response
-from fastapi.responses import StreamingResponse
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import requests
@@ -162,5 +162,14 @@ def logout(response: Response):
   return {"status": "success"}
 
 
-# 🔻 Mount Static Files ไว้บรรทัดล่างสุดเสมอ 🔻
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+# ----------------- ตรวจสอบสิทธิ์หน้าแรก (Root Route) -----------------
+@app.get("/")
+def serve_home(request: Request):
+  # ถ้ายังไม่พบคุกกี้ล็อกอิน ให้ Redirect ไปหน้า login.html ทันที
+  if request.cookies.get("logged_in") != "true":
+    return RedirectResponse(url="/login.html")
+  return FileResponse("static/index.html")
+
+
+# 🔻 Mount Static Files ไว้สำหรับไฟล์ประกอบ (CSS, JS, login.html, รูปภาพ) 🔻
+app.mount("/", StaticFiles(directory="static"), name="static")
