@@ -60,6 +60,7 @@ class ResetPasswordRequest(BaseModel):
     new_password: str
 
 class TelemetryData(BaseModel):
+    user_id: Optional[int] = None  # รองรับการระบุ ID ของเจ้าของอุปกรณ์
     fall_detected: bool = False
     temperature: Optional[float] = None
     humidity: Optional[float] = None
@@ -96,7 +97,7 @@ def generate_frames():
 def video_feed():
     return StreamingResponse(generate_frames(), media_type="multipart/x-mixed-replace; boundary=frame")
 
-# --- Telemetry & Logs ---
+# --- Telemetry & Logs แยกตาม User ---
 @app.post("/api/telemetry")
 async def receive_api_telemetry(data: TelemetryData):
     alerts = []
@@ -111,31 +112,49 @@ async def receive_api_telemetry(data: TelemetryData):
             alerts.append(f"⚠️ ความชื้น: ต่ำเกินไป ({data.humidity} %)")
 
     if alerts:
-        msg = f"⚠️ [รายงานแจ้งเตือนระบบ]\n" + "\n".join(alerts) + f"\n\n📊 ข้อมูลปัจจุบัน:\n- อุณหภูมิ: {data.temperature} °C\n- ความชื้น: {data.humidity} %"
+        owner_info = f" (User ID: {data.user_id})" if data.user_id else ""
+        msg = f"⚠️ [รายงานแจ้งเตือนระบบ{owner_info}]\n" + "\n".join(alerts) + f"\n\n📊 ข้อมูลปัจจุบัน:\n- อุณหภูมิ: {data.temperature} °C\n- ความชื้น: {data.humidity} %"
         send_line_alert(msg)
 
     try:
-        supabase.table("sensor_logs").insert({
+        log_payload = {
             "fall_detected": data.fall_detected,
             "temperature": data.temperature,
             "humidity": data.humidity,
-        }).execute()
+        }
+        if data.user_id is not None:
+            log_payload["user_id"] = data.user_id
+
+        supabase.table("sensor_logs").insert(log_payload).execute()
         return {"status": "success"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/logs")
-def get_logs():
+def get_logs(request: Request):
+    """กรองให้ดึงเฉพาะข้อมูลของผู้ใช้ที่ล็อกอินอยู่ หากเป็น admin จะเห็นทั้งหมด"""
+    current_uid = request.cookies.get("user_id")
+    if not current_uid:
+        return []
+
     try:
-        res = supabase.table("sensor_logs").select("*").order("id", desc=True).limit(10).execute()
+        query = supabase.table("sensor_logs").select("*").order("id", desc=True).limit(10)
+        
+        # ถ้าไม่ใช่ admin ให้กรองเฉพาะแถวที่เป็น user_id ของคนนั้น
+        if current_uid != "admin" and current_uid.isdigit():
+            query = query.eq("user_id", int(current_uid))
+
+        res = query.execute()
         return res.data
     except Exception:
         return []
 
-# --- Authentication & Password Reset ---
+# --- Authentication & Multi-User Management ---
 @app.post("/api/login")
 def login(data: LoginRequest, response: Response):
     login_id = data.username.strip()
+    
+    # กรณี Admin หลัก
     if login_id == ADMIN_USER and data.password == ADMIN_PASS:
         response.set_cookie(key="logged_in", value="true", max_age=86400, samesite="lax")
         response.set_cookie(key="user_id", value="admin", max_age=86400, samesite="lax")
@@ -144,9 +163,10 @@ def login(data: LoginRequest, response: Response):
     try:
         user_query = supabase.table("users").select("*").or_(f"username.eq.{login_id},email.eq.{login_id}").eq("password", data.password).execute()
         if user_query.data:
-            uname = user_query.data[0].get("username", login_id)
+            user_record = user_query.data[0]
+            # บันทึก ID เป็นตัวเลขลงคุกกี้เพื่อใช้กรองข้อมูลเฉพาะบุคคล
             response.set_cookie(key="logged_in", value="true", max_age=86400, samesite="lax")
-            response.set_cookie(key="user_id", value=uname, max_age=86400, samesite="lax")
+            response.set_cookie(key="user_id", value=str(user_record["id"]), max_age=86400, samesite="lax")
             return {"status": "success"}
     except Exception:
         pass
@@ -154,17 +174,22 @@ def login(data: LoginRequest, response: Response):
 
 @app.post("/api/signup")
 def register_user(data: SignUpRequest):
+    u_clean = data.username.strip()
+    e_clean = data.email.strip().lower()
+
     try:
-        existing = supabase.table("users").select("id").or_(f"username.eq.{data.username},email.eq.{data.email}").execute()
+        # ตรวจสอบความซ้ำซ้อนของ username หรือ email ในระบบ
+        existing = supabase.table("users").select("id").or_(f"username.eq.{u_clean},email.eq.{e_clean}").execute()
         if existing.data:
-            raise HTTPException(status_code=400, detail="ชื่อผู้ใช้หรืออีเมลนี้มีอยู่ในระบบแล้ว")
+            raise HTTPException(status_code=400, detail="ชื่อผู้ใช้ (Username) หรืออีเมลนี้ มีผู้ลงทะเบียนแล้ว")
+
         supabase.table("users").insert({
-            "first_name": data.first_name,
-            "last_name": data.last_name,
-            "username": data.username,
-            "email": data.email,
+            "first_name": data.first_name.strip(),
+            "last_name": data.last_name.strip(),
+            "username": u_clean,
+            "email": e_clean,
             "password": data.password,
-            "phone": data.phone,
+            "phone": data.phone.strip() if data.phone else None,
         }).execute()
         return {"status": "success"}
     except HTTPException:
